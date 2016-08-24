@@ -17,5 +17,5 @@ from django.conf.urls import url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^$', views.post_list, name='post_list'),
+    url(r'^$', views.push_urls, name='push_urls'),
 ]
