@@ -4,14 +4,13 @@ import requests
 def push_urls(request):
     url = "https://fcm.googleapis.com/fcm/send"
 
-    payload = "data=%7B%20%22multicast_id%22%3A%20216%2C%20%20%20%22success%22%3A%203%2C%20%20%20%22failure%22%3A%203%2C%20%20%20%22canonical_ids%22%3A%201%2C%20%20%20%22results%22%3A%20%5B%20%20%20%20%20%7B%20%22message_id%22%3A%20%221%3A0408%22%20%7D%2C%20%20%20%20%20%7B%20%22error%22%3A%20%22Unavailable%22%20%7D%2C%20%20%20%20%20%7B%20%22error%22%3A%20%22InvalidRegistration%22%20%7D%2C%20%20%20%20%20%7B%20%22message_id%22%3A%20%221%3A1516%22%20%7D%2C%20%20%20%20%20%7B%20%22message_id%22%3A%20%221%3A2342%22%2C%20%22registration_id%22%3A%20%2232%22%20%7D%2C%20%20%20%20%20%7B%20%22error%22%3A%20%22NotRegistered%22%7D%20%20%20%5D%20%7D&to=eO6WaMzsDiY%3AAPA91bFnzMgzFpXUi-Ntr-YDrtH6iDX5xeQOxQ7oJDL1R2rdDLAYu2EbIqMM77IJFBAH7WP9xx_g8BAWoZaDKPTsdRLhneMdYqwnpIpUncJTzNf03PLH841WwGsEpYQs_V-tVo6fDtEe" 
+    payload = "data=%7B%20%22notification%22%3A%20%7B%20%20%20%20%20%22title%22%3A%20%22Portugal%20vs.%20Denmark%22%2C%20%20%20%20%20%22text%22%3A%20%225%20to%201%22%20%20%20%7D%2C%20%20%20%22to%22%20%3A%20%22bk3RNwTe3H0%3ACI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...%22%20%7D&to=dYQR2hgIZ50%3AAPA91bE3TSTqsTIwnNmGhNFfQJQfiW7tcKWAozmZuGeXGBBxMdhZc5LTYL4NzsJbOLug_z-8Ia0ts-IQhdsllZmwFwLTETTnHqUeh8otq7Edbz2Wwp-Pu6qZo9Wq3cSdZunfhUmQB4-S"
     headers = {
-            'content-type': "application/x-www-form-urlencoded",
-            'authorization': "key=AIzaSyCRyu3phfhkgk87pWSlkBt7MhSEjsMyu4k",
-            'cache-control': "no-cache",
-            'postman-token': "1f42827b-121f-49a4-f6a4-57ede577fed1"
-}
-
+        'content-type': "application/x-www-form-urlencoded",
+        'authorization': "key=AIzaSyCRyu3phfhkgk87pWSlkBt7MhSEjsMyu4k",
+        'cache-control': "no-cache",
+        'postman-token': "eace36c8-1927-7140-6d99-3a107350def8"
+        }
 
     response = requests.request("POST", url, data=payload, headers=headers)
 
