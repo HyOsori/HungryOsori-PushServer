@@ -15,7 +15,6 @@ def push_urls(request):
     response = requests.request("POST", url, data=payload, headers=headers)
 
     print(response.text)
-    return render(request, 'blog/post_list.html', {})
 
 
 
