@@ -1,4 +1,4 @@
-# -* coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from pyfcm import FCMNotification
 push_service = FCMNotification(api_key="AIzaSyCRyu3phfhkgk87pWSlkBt7MhSEjsMyu4k")
