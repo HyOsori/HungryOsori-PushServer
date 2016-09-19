@@ -9,15 +9,15 @@ from pyfcm import FCMNotification
 from django.views.decorators.csrf import csrf_exempt
 from .models import CrawlData
 from django.core import exceptions
-import errno
+import datetime
 api_list=[]
 push_api_and = settings.PUSH_API_AND
 push_api_ios = settings.PUSH_API_IOS
 api_list.append(push_api_and)
 api_list.append(push_api_ios)
 
+
 @csrf_exempt
-    
 def push_urls(request):
     for i in api_list:
         push_service = FCMNotification(api_key= i)
@@ -74,6 +74,7 @@ def push_urls(request):
 @csrf_exempt
 def crawl_data(request):
     crawl_id = request.POST['crawl_id']
+    date_now = datetime.datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)
 
@@ -90,7 +91,7 @@ def crawl_data(request):
                 for data in output_list:
                     sliced_data = data.split(separator)
                     if int(sliced_data[0]) > last_identification_number:
-                        new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1],
+                        new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1], date=date_now,
                                                   identification_number=int(sliced_data[0]), urls=sliced_data[2])
                         new_crawldata.save()
                     else:
@@ -99,7 +100,7 @@ def crawl_data(request):
                 output_list.reverse()
                 for data in output_list:
                     sliced_data = data.split(separator)
-                    new_crawldata = CrawlData(crawler_id=crawler_id,title=sliced_data[1],
+                    new_crawldata = CrawlData(crawler_id=crawler_id,title=sliced_data[1], date=date_now,
                                               identification_number=int(sliced_data[0]), urls=sliced_data[2])
                     new_crawldata.save()
 
