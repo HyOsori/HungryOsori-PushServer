@@ -1,14 +1,10 @@
-from django.shortcuts import render
 import json
-import httplib2
-import urllib
 import requests 
 import subprocess
 from django.conf import settings
 from pyfcm import FCMNotification
 from django.views.decorators.csrf import csrf_exempt
 from .models import CrawlData
-from django.core import exceptions
 import datetime
 api_list=[]
 push_api_and = settings.PUSH_API_AND
@@ -18,68 +14,39 @@ api_list.append(push_api_ios)
 
 
 @csrf_exempt
-def push_urls(request):
+def push_urls(token, data_list):
+    title = "New Article Arrived"
+    message = ""
+    tokens = []
+    for data in data_list:
+        message += data.title + " " + data.urls + "\n"
+    for data in token:
+        tokens.append(data)
+    print(tokens)
     for i in api_list:
-        push_service = FCMNotification(api_key= i)
+        push_service = FCMNotification(api_key=i)
         result = None
-        tokens = []
-        title = u"Test!"
-        message = u"this is the test push"
-        
-        #sup = "fOqbayB9yCq3o:APA91bHH4fQu5Bipea_9QEYsnduX0kQ_bMa7FlcaMeP0Jxy0e9KngBaTDwG_ZuSE_TVfjn_GmA5FoSeuaHrD9KN6vRNYBtmaCbAYPK8N90tF0BBmR-24jt-8xm5QC53fpepnWQiGXCtt"
-#        kkyu = "doQLVh518o8:APA91bFl027SHigp2b1aarCQUfCUaQ-RGOrdU3LYOne-JJlga34bnaeVOnFyW3P9GKwKFqMIFTuHdkKQh4_fGn58DWq9RAlonyAUyFznxw61wgbvnhPZiaCpxoQ3j76EIWMCC_tS037I"
-        wohn = "dYQR2hgIZ50:APA91bE3TSTqsTIwnNmGhNFfQJQfiW7tcKWAozmZuGeXGBBxMdhZc5LTYL4NzsJbOLug_z-8Ia0ts-IQhdsllZmwFwLTETTnHqUeh8otq7Edbz2Wwp-Pu6qZo9Wq3cSdZunfhUmQB4-S"
-#        yongand = "dMOBkHhz344:APA91bEVoAaHpDJGQ5zIvwpPD_xcKe8Ncl8mP3387h9aKZLLoo8NbJik7lz7Sg6w4lFsUOYwyNxdrKrLkcfXRicoS10JFIhhfPcOHpkjky148SI-yiUCe9M7k9zEn7W-pZtGeL79UM9r"
-#        sup = "fOqyB9yCq3o:APA91bHH4fQu5Bipea_9QEYsnduX0kQ_bMa7FlcaMeP0Jxy0e9KngBaTDwG_ZuSE_TVfjn_GmA5FoSeuaHrD9KN6vRNYBtmaCbAYPK8N90tF0BBmRjn_GmA5FoSeuaHrD9KN6vRNYBtmaCbAYPK8N90tF0BBmR-24jt-8xm5QC53fpepnWQiGXCtt"
 
-        #listname = [kkyu,wohn]
-        #for i in listname:
-
-        tokens.append(wohn)
- #       tokens.append(kkyu)
- #       tokens.append(yongand)
- #       tokens.append(sup)
         try:
-            result = push_service.notify_multiple_devices(registration_ids=tokens, message_title=title, message_body=message,
-                                                                                               data_message={})
+            result = push_service.notify_multiple_devices(registration_ids=tokens, message_title=title,
+                                                          message_body=message, data_message={})
         except Exception as e:
-            print (e)
-            print (str(result))
-        data = {
-                "result" : 0,
-                "message":"success",
-                "crawler_id":[
-                    
-                    ]
-                }
-#       body = urllib.parse.urlencode(data)
-#        h = httplib2.Http()
-#       resp, content = h.request("http://52.78.113.6:8000/subscriber_pushtoken/", method="POST", body=body)
-    
-        data1 = request.POST['title']
-        data2 = request.POST['token']
-        data3 = request.POST['body']
-
-        print(data1)
-        print(data2)
-        print(data3)
-
-#    currentDir = subprocess.check_output(["pwd"])
-#    currentDir = currentDir[:-1]
-#    subprocess.call(["python "+currentDir+"/push/pushing.py"], shell=True)
-#    subprocess.call(["python "+currentDir+"/push/pushingios.py"], shell=True)
-#   print(response.text)
+            print(e)
+            print(str(result))
 
 
 @csrf_exempt
 def crawl_data(request):
-    crawl_id = request.POST['crawl_id']
+    crawl_id = int(request.GET['crawl_id'])
     date_now = datetime.datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)
 
     for key, value in data.items():
         if int(value['crawl_id']) == crawl_id:
+            new_data_cnt = 0
+            new_data_list = list()
+            is_new_exist = False
             file_name = value['file_name']
             separator = value['separator']
             crawler_id = int(value['crawl_id'])
@@ -91,9 +58,12 @@ def crawl_data(request):
                 for data in output_list:
                     sliced_data = data.split(separator)
                     if int(sliced_data[0]) > last_identification_number:
+                        is_new_exist = True
+                        new_data_cnt += 1
                         new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1], date=date_now,
                                                   identification_number=int(sliced_data[0]), urls=sliced_data[2])
                         new_crawldata.save()
+                        new_data_list.append(new_crawldata)
                     else:
                         break
             except:
@@ -104,4 +74,11 @@ def crawl_data(request):
                                               identification_number=int(sliced_data[0]), urls=sliced_data[2])
                     new_crawldata.save()
 
+            if is_new_exist:
+                r = requests.post('http://52.78.113.6:8000/subscribers_pushtoken/', data={'crawler_id': 'first crawler'})
+                token_data = r.json()
+                token_data = token_data['data']
+                push_urls(token_data, new_data_list)
+
     return
+
