@@ -95,8 +95,9 @@ def crawl_data(request):
                         new_crawldata.save()
                     else:
                         break
-            except exceptions.ObjectDoesNotExist as e:
-                for data in output_list.reverse():
+            except:
+                output_list.reverse()
+                for data in output_list:
                     sliced_data = data.split(separator)
                     new_crawldata = CrawlData(crawler_id=crawler_id,title=sliced_data[1],
                                               identification_number=int(sliced_data[0]), urls=sliced_data[2])
