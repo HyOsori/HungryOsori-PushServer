@@ -159,3 +159,6 @@ ENV/
 
 # Linux temporary files
 *.swp
+
+# WebCrawler directory
+Osori-WebCrawler

@@ -7,6 +7,9 @@ import subprocess
 from django.conf import settings
 from pyfcm import FCMNotification
 from django.views.decorators.csrf import csrf_exempt
+from .models import CrawlData
+from django.core import exceptions
+import errno
 api_list=[]
 push_api_and = settings.PUSH_API_AND
 push_api_ios = settings.PUSH_API_IOS
@@ -68,5 +71,35 @@ def push_urls(request):
 #   print(response.text)
 
 
+@csrf_exempt
+def crawl_data(request):
+    crawl_id = request.POST['crawl_id']
+    with open('Osori-WebCrawler/settings.json') as json_data:
+        data = json.load(json_data)
 
-# Create your views here.
+    for key, value in data.items():
+        if int(value['crawl_id']) == crawl_id:
+            file_name = value['file_name']
+            separator = value['separator']
+            crawler_id = int(value['crawl_id'])
+            output = (subprocess.check_output("python3 Osori-WebCrawler/" + file_name, shell=True)).decode("utf-8")
+            output_list = output.splitlines()
+            try:
+                cur_data = CrawlData.objects.filter(crawler_id=crawler_id).order_by('identification_number')
+                last_identification_number = cur_data.last().identification_number
+                for data in output_list:
+                    sliced_data = data.split(separator)
+                    if int(sliced_data[0]) > last_identification_number:
+                        new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1],
+                                                  identification_number=int(sliced_data[0]), urls=sliced_data[2])
+                        new_crawldata.save()
+                    else:
+                        break
+            except exceptions.ObjectDoesNotExist as e:
+                for data in output_list.reverse():
+                    sliced_data = data.split(separator)
+                    new_crawldata = CrawlData(crawler_id=crawler_id,title=sliced_data[1],
+                                              identification_number=int(sliced_data[0]), urls=sliced_data[2])
+                    new_crawldata.save()
+
+    return
