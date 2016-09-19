@@ -9,7 +9,7 @@ from pyfcm import FCMNotification
 from django.views.decorators.csrf import csrf_exempt
 from .models import CrawlData
 from django.core import exceptions
-import datetime
+from datetime import datetime, timedelta
 api_list=[]
 push_api_and = settings.PUSH_API_AND
 push_api_ios = settings.PUSH_API_IOS
@@ -73,8 +73,8 @@ def push_urls(request):
 
 @csrf_exempt
 def crawl_data(request):
-    crawl_id = request.POST['crawl_id']
-    date_now = datetime.datetime.now()
+    crawl_id = int(request.POST['crawl_id'])
+    date_now = datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)
 
@@ -105,3 +105,24 @@ def crawl_data(request):
                     new_crawldata.save()
 
     return
+
+
+@csrf_exempt
+def testfunc(request):
+#    filtering_crawl_id = request.POST['fil_crw_td']
+    crawling_cycle = 30 #request.POST['crwl_cycle']
+    date_now = datetime.now()   
+    last_checked_time = date_now-timedelta(minutes = int(crawling_cycle) )
+
+    data = CrawlData.objects.filter(
+            crawler_id = 3,
+            date__gte = last_checked_time)
+#    data = CrawlData.objects.filter(
+#            crawler_id=filtering_crawl_id
+#            ).filter( 
+#                    (date_now - crwl_cycle)__lte = date)
+                    
+    for ent in data:
+        print(ent.title + "  " +str(ent.date))
+    return
+
