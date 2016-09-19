@@ -156,3 +156,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Linux temporary files
+*.swp

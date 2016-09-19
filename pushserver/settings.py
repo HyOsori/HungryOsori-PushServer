@@ -118,3 +118,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+PUSH_API_AND="AIzaSyCRyu3phfhkgk87pWSlkBt7MhSEjsMyu4k"
+PUSH_API_IOS="AIzaSyBEVkJRz7HazHJq_u8NmQP5ZLJikf1lEbM"
+
