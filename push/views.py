@@ -10,6 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import CrawlData
 from django.core import exceptions
 from datetime import datetime, timedelta
+from rest_framework.response import Response
+
 api_list=[]
 push_api_and = settings.PUSH_API_AND
 push_api_ios = settings.PUSH_API_IOS
@@ -124,28 +126,21 @@ def crawl_data():
     return update
 
 @csrf_exempt
-def API_token_request(request):
-    if crawl_data(request) == 1:
-        try:
-            update_id =
-
-        except:
-            data = {'return_code': -100, 'message': 'Invalid crawler_id'}
-            return Response(data)
-            # data={'subscriber':subscriber[0].user_id}
-            # return Response(data)
-            total = []
-            for subs in subscriber:
-                push_token = PushToken.objects.filter(user_id=subs.user_id)
-                for pushtoken in push_token:
-                   arr = {'user_id': pushtoken.user_id, 'push_token': pushtoken.push_token}
-                 total.append(arr)
-
-            # except:
-            #    data={'return_code':-200, 'message':'No subscriber'}
-            #    return Response(data)
-            data = {'return_code': 0, 'data': total}
+def send(update,num):
+    if(update[num-1]==1):
+        data = {'crawler_id' : num}
         return Response(data)
+    else:
+        return
+
+@csrf_exempt
+def API_send():
+    update = crawl_data()
+
+    for crawl_id in update:
+        send(update,crawl_id + 1)
+
+    return
 
 @csrf_exempt
 def testfunc(request):
