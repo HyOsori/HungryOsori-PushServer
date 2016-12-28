@@ -116,6 +116,27 @@ def crawl_data(request):
 
     return
 
+@csrf_exempt
+def API_token_request():
+    try:
+        subscriber = Subscription.objects.filter(crawler_id=request.data['crawler_id'])
+    except:
+        data = {'return_code': -100, 'message': 'Invalid crawler_id'}
+        return Response(data)
+        # data={'subscriber':subscriber[0].user_id}
+        # return Response(data)
+        total = []
+        for subs in subscriber:
+            push_token = PushToken.objects.filter(user_id=subs.user_id)
+            for pushtoken in push_token:
+               arr = {'user_id': pushtoken.user_id, 'push_token': pushtoken.push_token}
+             total.append(arr)
+
+        # except:
+        #    data={'return_code':-200, 'message':'No subscriber'}
+        #    return Response(data)
+        data = {'return_code': 0, 'data': total}
+    return Response(data)
 
 @csrf_exempt
 def testfunc(request):
