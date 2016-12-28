@@ -82,40 +82,70 @@ def push_urls(request):
 #   print(response.text)
 
 @csrf_exempt
-def crawl_data(request):
-    crawl_id = int(request.POST['crawl_id'])                    #when receive the post and get crwal_id
+def crawl_data():
+    #Number of Crawlers will be used later
+    update = []
+
     date_now = datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)                             #save the json_data in data
 
-    for key, value in data.items():                             #get key and value in data class
-        if int(value['crawl_id']) == crawl_id:                  #find the crawl_id
-            file_name = value['file_name']                      #value is dictionary type, so it access by its index
-            separator = value['separator']
-            crawler_id = int(value['crawl_id'])
-            output = (subprocess.check_output("python3 Osori-WebCrawler/" + file_name, shell=True)).decode("utf-8") #crawl the file
-            output_list = output.splitlines()                   #split its data by word-break
-            try:
-                cur_data = CrawlData.objects.filter(crawler_id=crawler_id).order_by('identification_number') #filtering data by crawler_id and ordering identification_number
-                last_identification_number = cur_data.last().identification_number  #saving last identification number
-                for data in output_list:            #list of data in output list which splited by spaces
-                    sliced_data = data.split(separator)     #seperating by seperator value received in data.items()
-                    if int(sliced_data[0]) > last_identification_number:    #which means the new post is written,
-                        new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1], date=date_now,   #switch the data
+    for key, value in data.items():
+        update.append(0)
+        #get key and value in data class
+        #find the crawl_id
+        file_name = value['file_name']                      #value is dictionary type, so it access by its index
+        separator = value['separator']
+        crawler_id = int(value['crawl_id'])
+        output = (subprocess.check_output("python3 Osori-WebCrawler/" + file_name, shell=True)).decode("utf-8") #crawl the file
+        output_list = output.splitlines()                   #split its data by word-break
+        try:
+            cur_data = CrawlData.objects.filter(crawler_id=crawler_id).order_by('identification_number') #filtering data by crawler_id and ordering identification_number
+            last_identification_number = cur_data.last().identification_number  #saving last identification number
+            for data in output_list:            #list of data in output list which splited by spaces
+                sliced_data = data.split(separator)     #seperating by seperator value received in data.items()
+            if int(sliced_data[0]) > last_identification_number:    #which means the new post is written,
+                new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1], date=date_now,   #switch the data
                                                   identification_number=int(sliced_data[0]), urls=sliced_data[2])
-                        new_crawldata.save()
-                    else:
-                        break
-            except:             #when the display of board is up to down,
-                output_list.reverse()       #reverse the order
-                for data in output_list:   #data is parameter in output_list
-                    sliced_data = data.split(separator)                 #CrawlData from model
-                    new_crawldata = CrawlData(crawler_id=crawler_id,title=sliced_data[1], date=date_now,
-                                              identification_number=int(sliced_data[0]), urls=sliced_data[2])
-                    new_crawldata.save()
+                new_crawldata.save()
+                update[crawler_id] = 1
+            else:
+                break
+        except:             #when the display of board is up to down,
+            output_list.reverse()       #reverse the order
+            for data in output_list:   #data is parameter in output_list
+                sliced_data = data.split(separator)                 #CrawlData from model
+                new_crawldata = CrawlData(crawler_id=crawler_id,title=sliced_data[1], date=date_now,
+                                           identification_number=int(sliced_data[0]), urls=sliced_data[2])
 
-    return
+                new_crawldata.save()
+                update[crawler_id] = 1
 
+    return update
+
+@csrf_exempt
+def API_token_request(request):
+    if crawl_data(request) == 1:
+        try:
+            update_id =
+
+        except:
+            data = {'return_code': -100, 'message': 'Invalid crawler_id'}
+            return Response(data)
+            # data={'subscriber':subscriber[0].user_id}
+            # return Response(data)
+            total = []
+            for subs in subscriber:
+                push_token = PushToken.objects.filter(user_id=subs.user_id)
+                for pushtoken in push_token:
+                   arr = {'user_id': pushtoken.user_id, 'push_token': pushtoken.push_token}
+                 total.append(arr)
+
+            # except:
+            #    data={'return_code':-200, 'message':'No subscriber'}
+            #    return Response(data)
+            data = {'return_code': 0, 'data': total}
+        return Response(data)
 
 @csrf_exempt
 def testfunc(request):
