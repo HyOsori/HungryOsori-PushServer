@@ -2,7 +2,7 @@ from django.shortcuts import render
 import json
 import httplib2
 import urllib
-import requests 
+import requests
 import subprocess
 from django.conf import settings
 from pyfcm import FCMNotification
@@ -17,17 +17,27 @@ push_api_and = settings.PUSH_API_AND
 push_api_ios = settings.PUSH_API_IOS
 api_list.append(push_api_and)
 api_list.append(push_api_ios)
-
+tokens = []
 
 @csrf_exempt
 def push_urls(token):
     title = "IOS NOTIFICATION"
     message = "IOS"
-    tokens = []
-    fuck = 'cKYp-sSJMuA:APA91bF9Jtlf2KsPknooy--OcJr0S9Qm9ebjc3novTLMZI08WH7_2F6zklJzHnuaULuuAo7sw-g9Ht6_TtRkOxPa9ZDRLQ5NtR6jCGOhUZAKbax0dHYfRSsyEL9LRL5CMHpkF7SxRMtc'
+    print('heeh"')
+    tmp_crawler_id = '2'
+    api_request_url = 'http://52.78.113.6:8000/subscribers_pushtoken/'
+    payload = {'crawler_id': tmp_crawler_id}
+    r = requests.post(api_request_url, data=payload)
+    token_receive_data = r.json()
+    for k in token_receive_data['data']:
+        tokens.append(k['push_token'])
+    print("ddd")
+    #print(r.text)
+
+    #fuck = 'cKYp-sSJMuA:APA91bF9Jtlf2KsPknooy--OcJr0S9Qm9ebjc3novTLMZI08WH7_2F6zklJzHnuaULuuAo7sw-g9Ht6_TtRkOxPa9ZDRLQ5NtR6jCGOhUZAKbax0dHYfRSsyEL9LRL5CMHpkF7SxRMtc'
 #    sub = 'e3zQZA9Iqks:APA91bGsYV3VFDZtogzTQ_cH0rObpsvSVdHvj_UtRCjm_CWFEjDHDd7cvB31TWS6_CaapoQH6r1C3FPi3aVQrdzmFDNSKnS_v5LNfLuGwx6iL-HgUYvJCE0KMHeb6bstuzkiu5Nvjlmf'
 #    fuck2 = 'dXw-spzO5Qc:APA91bFdpFt48hEAk7lBQV4A-vOmFEuWibKXaHdis7gmldCY4uVwbDZfxZ23yBzyRKvgsscV6tVhZL-wTXT5A08LCxxfGhuBn8tz2Crifc7eMaRbmJvWJvw9z4uDdUdIp_y2Jsdr5lQS'
-    tokens.append(fuck)
+    #tokens.append(fuck)
  #   tokens.append(sub)
  #   tokens.append(fuck2)
     message_data = {'title': 'Android Data Reboot',
@@ -39,27 +49,37 @@ def push_urls(token):
 #    for data in token:
 #        tokens.append(data)
 #    print(tokens)
+    print (tokens)
+
+
     for i in api_list:
         push_service = FCMNotification(api_key=i)
         result = None
         try:
             if i == api_list[0]:
+                print("and")
                 result = push_service.notify_multiple_devices(registration_ids=tokens, data_message=message_data)
             elif i == api_list[1]:
                 result = push_service.notify_multiple_devices(message_title=title, message_body=message,registration_ids=tokens, data_message={})
             #message_title= title, message_body= message,
+
         except Exception as e:
             print(e)
             print(str(result))
 
 @csrf_exempt
 def test_request():
+    print ("test enter!")
     URL = "52.78.113.6:8000/subscribers_pushtoken/"
     data = {'crawler_id' : '2'}
     req = urllib.Request()
     result = Response(URL, data)
+    print (result)
 
 
+@csrf_exempt
+def hello_world(void):
+    print("hello world!")
 
 
 @csrf_exempt
