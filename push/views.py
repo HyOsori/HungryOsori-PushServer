@@ -20,68 +20,47 @@ api_list.append(push_api_ios)
 
 
 @csrf_exempt
-def push_urls(request):
+def push_urls(token):
+    title = "IOS NOTIFICATION"
+    message = "IOS"
+    tokens = []
+    fuck = 'cKYp-sSJMuA:APA91bF9Jtlf2KsPknooy--OcJr0S9Qm9ebjc3novTLMZI08WH7_2F6zklJzHnuaULuuAo7sw-g9Ht6_TtRkOxPa9ZDRLQ5NtR6jCGOhUZAKbax0dHYfRSsyEL9LRL5CMHpkF7SxRMtc'
+#    sub = 'e3zQZA9Iqks:APA91bGsYV3VFDZtogzTQ_cH0rObpsvSVdHvj_UtRCjm_CWFEjDHDd7cvB31TWS6_CaapoQH6r1C3FPi3aVQrdzmFDNSKnS_v5LNfLuGwx6iL-HgUYvJCE0KMHeb6bstuzkiu5Nvjlmf'
+#    fuck2 = 'dXw-spzO5Qc:APA91bFdpFt48hEAk7lBQV4A-vOmFEuWibKXaHdis7gmldCY4uVwbDZfxZ23yBzyRKvgsscV6tVhZL-wTXT5A08LCxxfGhuBn8tz2Crifc7eMaRbmJvWJvw9z4uDdUdIp_y2Jsdr5lQS'
+    tokens.append(fuck)
+ #   tokens.append(sub)
+ #   tokens.append(fuck2)
+    message_data = {'title': 'Android Data Reboot',
+                        'body': 'Android',
+                        'clickurl' : 'http://www.daum.net'
+                    }
+#    for data in dat    a_list:
+#        message += data.title + " " + data.urls + "\n"
+#    for data in token:
+#        tokens.append(data)
+#    print(tokens)
     for i in api_list:
-        push_service = FCMNotification(api_key=i)       #get api key in api_list which located in setting.py
+        push_service = FCMNotification(api_key=i)
         result = None
-        tokens = []                                     #define the token array
-        title = u"Mario"                                #define title
-        message = u"Great Match!"                       #define message adding u before string prevent error
-
-#       wohn = "eKTYlReIRiE:APA91bEzhV7mrxmanXZOzExRyKU-oA1G4UmPal32Kavn0Coh3Q_qIk-w6k7Cgh1eWahBRPan1U4b7jJ-RRW6dlFBrR4yii6mLmYpGDCqEY9KInUvioCcA5qQBSQfK-wziFSCh4pmh143"
-        wohn = "dB3mTquf4c0:APA91bG6dr_HBd0PfA3Nt8ILu5GZCCkese1qjbAwqUq8rCybYTuq54BcYPPMfZtUfK0TMfem6k6xj1m66OOIytnweXae-j7D4dR6OgQhgGV2wwsOPmWVaTashQLU_TEeaIUAjmxwtC99"
-#listname = [kkyu,wohn]
-        #for i in listname:
-        wohn2 = "d7X_ODkKsls:APA91bESy9N5iHnArgfeqOpk4n_bhP53zbJK8ZP6rs75bOmIkPDuGcszbA5wUDjs0GsFAYugJjFx41f0LX3f4epWAlN_8dFD9qG_SfWBVLQdVqkbt2J12swmskUhbamDq6pn7SouoDJG"
-        tokens.append(wohn)                             #adding wohn token to tokens array
-        tokens.append(wohn2)
-#       tokens.append(kkyu)
- #       tokens.append(yongand)
- #       tokens.append(sup)
-#      data_message = {
-#            "Nick": "Mario",
-#            "body": "great match!",
-#            "Room": "PortugalVSDenmark"
-#        }
-        message_data = {
-            'title':'Steam',
-            'clickurl':'https://github.com/hyosori'
-        }
-#        title = str(request.POST[data_message["Nick"]])
-#        body = str(request.POST[data_message["body"]])
-
-#        data1 = request.POST['title']
-#        data3 = request.POST['body']
-
-#        print(data1)
-#        print(data3)
         try:
-            result = push_service.notify_multiple_devices(registration_ids=tokens,data_message = message_data)
-
-        #    result = push_service.notify_multiple_devices(registration_ids=tokens, message_title=title,
-        #                                                 message_body=message, data_message={})
+            if i == api_list[0]:
+                result = push_service.notify_multiple_devices(registration_ids=tokens, data_message=message_data)
+            elif i == api_list[1]:
+                result = push_service.notify_multiple_devices(message_title=title, message_body=message,registration_ids=tokens, data_message={})
+            #message_title= title, message_body= message,
         except Exception as e:
-            print (e)
-            print (str(result))
-        data = {                                        #data form would be used later...
-                "result" : 0,
-                "message":"success",
-                "crawler_id":[
+            print(e)
+            print(str(result))
 
-                    ]
-                }
-
-#       body = urllib.parse.urlencode(data)
-#        h = httplib2.Http()
-#       resp, content = h.request("http://52.78.113.6:8000/subscriber_pushtoken/", method="POST", body=body)
-    
+@csrf_exempt
+def test_request():
+    URL = "52.78.113.6:8000/subscribers_pushtoken/"
+    data = {'crawler_id' : '2'}
+    req = urllib.Request()
+    result = Response(URL, data)
 
 
-#    currentDir = subprocess.check_output(["pwd"])
-#    currentDir = currentDir[:-1]
-#    subprocess.call(["python "+currentDir+"/push/pushing.py"], shell=True)
-#    subprocess.call(["python "+currentDir+"/push/pushingios.py"], shell=True)
-#   print(response.text)
+
 
 @csrf_exempt
 def crawl_data():
@@ -108,7 +87,7 @@ def crawl_data():
                 sliced_data = data.split(separator)     #seperating by seperator value received in data.items()
             if int(sliced_data[0]) > last_identification_number:    #which means the new post is written,
                 new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1], date=date_now,   #switch the data
-                                                  identification_number=int(sliced_data[0]), urls=sliced_data[2])
+                                          identification_number=int(sliced_data[0]), urls=sliced_data[2])
                 new_crawldata.save()
                 update[crawler_id] = 1
             else:
@@ -118,12 +97,14 @@ def crawl_data():
             for data in output_list:   #data is parameter in output_list
                 sliced_data = data.split(separator)                 #CrawlData from model
                 new_crawldata = CrawlData(crawler_id=crawler_id,title=sliced_data[1], date=date_now,
-                                           identification_number=int(sliced_data[0]), urls=sliced_data[2])
+                                          identification_number=int(sliced_data[0]), urls=sliced_data[2])
 
                 new_crawldata.save()
                 update[crawler_id] = 1
 
     return update
+
+
 
 @csrf_exempt
 def send(update,num):
