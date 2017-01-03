@@ -136,9 +136,6 @@ def crawl_data(void):
 
 
 
-
-
-
         for i in range (0, int(length_of_list)) :
             print("crawler_id : " + str(crawler_id)  + "\ni : " + str(i) + "\n")
             if data_base[crawler_id][i] != final_list[i] :
@@ -153,7 +150,7 @@ def crawl_data(void):
 
                 changed_crawler_id[0] = str(crawler_id)
                 changed_crawler_id[1] = value_title
-                changed_crawler_id[2] = str(final_list[i] + "!")
+                changed_crawler_id[2] = str("내용중 \"" + final_list[i] + "\"이 변경되었습니다!")
                 tmp = (output_list[i].split(separator))
                 changed_crawler_id[3] = str(tmp[int(url_index)])   #str(final_list[i][int(url_index)])
                 push_urls(void)
