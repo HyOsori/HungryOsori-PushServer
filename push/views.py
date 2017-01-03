@@ -19,7 +19,7 @@ push_api_ios = settings.PUSH_API_IOS
 api_list.append(push_api_and)
 api_list.append(push_api_ios)
 tokens = []
-changed_crawler_id = ['0', 'crawler_name', 'changed_line']
+changed_crawler_id = ['0', 'crawler_name', 'changed_line', 'link_urls']
 data_base = [['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
              ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
              ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10']]
@@ -32,8 +32,11 @@ def push_urls(void):
     message_ios = str(changed_crawler_id[2])
     message_data_android = {'title': str(changed_crawler_id[1] + " Changed!"),
                     'body': str(changed_crawler_id[2]),
-                    'clickurl': 'http://www.daum.net'
+                    'clickurl': str(changed_crawler_id[3])
                     }
+
+    print("/////////// urls is " + changed_crawler_id[3])
+
     api_request_url = 'http://52.78.113.6:8000/subscribers_pushtoken/'
     payload = {'crawler_id': changed_crawler_id[0]}
     r = requests.post(api_request_url, data=payload)
@@ -92,17 +95,23 @@ def crawl_data(void):
         separator = value['separator']
         crawler_id = int(value['crawl_id'])
         value_title = value['title']
+        url_index = value['url_index']
         crit = int(value['criteria'])
         # print(file_name + " " + separator + " " + str(crawler_id) + " " + value_title + " " + str(crit))
         #print ("criteria s :::: " + str(crit))
         #print (file_name + " :::: " + separator + " :::: " + str(crawler_id))
         output = (subprocess.check_output("python3 Osori-WebCrawler/" + file_name, shell=True)).decode("utf-8") #crawl the file
         output_list = output.splitlines()                   #split its data by word-break
+        print(output_list)
         #print ("output ::: " + output + " :::::: " + output_list[0])
         final_list = []
+
+
         final_list.clear()
+
         for output_list_ele in output_list :
             listing = output_list_ele.split(separator)
+            print (listing[0])
             final_list.append(listing[crit])
             # print (str(crawler_id) + "add is " + ((listing[crit] + "00000000000")[:10]))
 
@@ -145,6 +154,8 @@ def crawl_data(void):
                 changed_crawler_id[0] = str(crawler_id)
                 changed_crawler_id[1] = value_title
                 changed_crawler_id[2] = str(final_list[i] + "!")
+                tmp = (output_list[i].split(separator))
+                changed_crawler_id[3] = str(tmp[int(url_index)])   #str(final_list[i][int(url_index)])
                 push_urls(void)
                 for j in range(0,int(length_of_list)):
                     print(str(j) + "is :: " + data_base[crawler_id][j] +  "  ")
