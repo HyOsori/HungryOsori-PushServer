@@ -1,0 +1,101 @@
+{
+  /*
+  "hanyang_university_cs_notice": {
+    "file_name": "hanyang_university_cs_notice.py",
+    "crawl_id": "0",
+    "crawl_cycle": "60",
+    "title" : "한양대학교 컴퓨터공학부 공지사항",
+    "desc": "긁습니다",
+    "thumbnail": "URL",
+    "num_extra_data":"0",
+    "separator" : "&^%987&^%"
+  },
+  */
+  "naver_realrank" : {
+    "file_name": "naver_realrank.py",
+    "crawl_id": "1",
+    "crawl_cycle": "10",
+    "title": "³네이버 실시간 랭킹",
+    "desc": "네이버 실시간 랭킹을 긁거요",
+    "thumbnail": "URL",
+    "num_extra_data":"0",
+    "separator" : "&^%987&^%"
+
+
+  },
+
+  "NDHS_Crawler" : {
+    "file_name": "NDHS_Crawler.py",
+    "crawl_id": "2",
+    "crawl_cycle": "7200",
+    "title": "남도학숙 식단",
+    "desc": "뭐 먹는지 긁어요",
+    "thumbnail": "URL",
+    "num_extra_data":"0",
+    "separator" : "&^%987&^%"
+  }
+  /*
+  "dcinside_hit_gallery" : {
+    "file_name": "dcinside_hit_gallery.py",
+    "crawl_id": "3",
+    "crawl_cycle": "60",
+    "title": "디시인사이드 힛 갤",
+    "desc": "힛갤에 뭐 올라옵니까?",
+    "thumbnail": "URL",
+    "num_extra_data": "0",
+    "separator": "~!@123~!@"
+  },
+
+  "FootballGameCrawler" : {
+    "file_name": "FootballGameCrawler.py",
+    "crawl_id": "4",
+    "crawl_cycle": "120",
+    "title": "해외 축구 경기 결과",
+    "desc": "모든 해외 경기 다 나옴",
+    "thumbnail": "URL",
+    "separator": "~!@123~!@"
+  },
+
+  "zangsisi_recent_manga" : {
+    "file_name": "zangsisi_recent_manga.py",
+    "crawl_id": "5",
+    "crawl_cycle": "120",
+    "title": "Zangsisi 알림",
+    "desc": "만화 뭐 올라오나",
+    "thumbnail": "URL",
+    "separator": "~!@123~!@"
+  },
+
+  "LOLUpdateContent" : {
+    "file_name": "LOLUpdateContent.py",
+    "crawl_id": "6",
+    "crawl_cycle": "60",
+    "title": "롤 업데이트 공지",
+    "desc": "망겜 업데이트 공지",
+    "thumbnail": "URL",
+    "separator": "~!@123~!@"
+  },
+
+  "steamCrawl": {
+    "file_name": "steamCrawl.py",
+    "crawl_id": "7",
+    "crawl_cycle": "120",
+    "title": "스팀 세일",
+    "desc": "뭐 할인?",
+    "thumbnail": "URL",
+    "separator": "~!@123~!@"
+  },
+
+  "dc_theaterM_gallery": {
+    "file_name": "dc_theaterM_gallery.py",
+    "crawl_id":"8",
+    "crawl_cycle": "60",
+    "title": "디시인사이드 연극뮤지컬 갤러리 개념글",
+    "desc": "연극뮤지컬갤러리 개념글입니다 ...?",
+    "thumbnail": "URL",
+    "num_extra_data": "0",
+    "separator": "&^%987&^%"
+
+  }
+  */
+}

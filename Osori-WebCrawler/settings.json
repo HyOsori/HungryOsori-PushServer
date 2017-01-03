@@ -1,0 +1,31 @@
+{
+
+  "naver_realrank" : {
+    "file_name": "naver_realrank.py",
+    "crawl_id": "1",
+    "crawl_cycle": "10",
+    "title": "네이버 실시간 랭킹",
+    "desc": "네이버 실시간 랭킹을 긁거요",
+    "thumbnail": "URL",
+    "num_extra_data":"0",
+    "separator" : "&^%987&^%",
+    "criteria" : "1",
+    "url_index" : "2"
+
+
+  },
+
+  "NDHS_Crawler" : {
+    "file_name": "NDHS_Crawler.py",
+    "crawl_id": "2",
+    "crawl_cycle": "7200",
+    "title": "남도학숙 식단",
+    "desc": "뭐 먹는지 긁어요",
+    "thumbnail": "URL",
+    "num_extra_data":"0",
+    "separator" : "&^%987&^%",
+    "criteria" : "1",
+    "url_index" : "2"
+
+  }
+}
