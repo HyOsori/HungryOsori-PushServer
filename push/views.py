@@ -136,9 +136,6 @@ def crawl_data(void):
 
 
 
-
-
-
         for i in range (0, int(length_of_list)) :
             print("crawler_id : " + str(crawler_id)  + "\ni : " + str(i) + "\n")
             if data_base[crawler_id][i] != final_list[i] :
