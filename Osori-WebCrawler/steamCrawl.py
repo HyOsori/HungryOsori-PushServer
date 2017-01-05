@@ -1,11 +1,14 @@
+#-*- coding: utf-8 -*-
 import scrapy
-
+import logging
 from scrapy.crawler import CrawlerProcess
-
+import datetime
 
 class SteamSpider(scrapy.Spider):
     name = 'steam sale off'
     start_urls = ['http://store.steampowered.com/search/?specials=1&os=win#sort_by=_ASC&specials=1&page=1']
+
+    logging.getLogger('scrapy').propagate = False
 
     def parse(self, response):
         titles = response.css(
@@ -17,7 +20,9 @@ class SteamSpider(scrapy.Spider):
         refs = response.css('#search_result_container > div:nth-child(2) > a::attr(href)').extract()
         results = zip(titles, refs, saleOff)
         for title, saleOff, defaultPrice in results:
-            print str(number) + "~!@123~!@" + title + "~!@123~!@" + self.base_urls + ref
+            #print (title)
+            print (title + " discount " + defaultPrice  + " &^%987&^%" + saleOff)
+#            print (str('1') + "~!@123~!@" + title + "~!@123~!@" + self.base_urls + refs)
 
 
 process = CrawlerProcess({

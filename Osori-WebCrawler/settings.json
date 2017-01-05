@@ -1,5 +1,15 @@
 {
-
+  "steamCrawl": {
+    "file_name": "steamCrawl.py",
+    "crawl_id": "0",
+    "crawl_cycle": "120",
+    "title": "스팀 세일",
+    "desc": "뭐 할인?",
+    "thumbnail": "URL",
+    "separator": "&^%987&^%",
+    "criteria" : "0",
+    "url_index" : "1"
+  },
   "naver_realrank" : {
     "file_name": "naver_realrank.py",
     "crawl_id": "1",
