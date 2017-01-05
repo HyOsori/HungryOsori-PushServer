@@ -28,7 +28,7 @@ db_created = 0
 
 @csrf_exempt
 def push_urls(void):
-    title_ios = str(changed_crawler_id[1] + " Changed!")
+    title_ios = str("구독중인 "+ changed_crawler_id[1] + " 이/가 변경되었습니다!")
     message_ios = str(changed_crawler_id[2])
     message_data_android = {'title': str(changed_crawler_id[1] + " Changed!"),
                     'body': str(changed_crawler_id[2]),
@@ -104,9 +104,8 @@ def crawl_data(void):
         output_list = output.splitlines()                   #split its data by word-break
         print(output_list)
         #print ("output ::: " + output + " :::::: " + output_list[0])
+
         final_list = []
-
-
         final_list.clear()
 
         for output_list_ele in output_list :
@@ -117,23 +116,8 @@ def crawl_data(void):
 
         length_of_list = len(final_list)
 
-        # for ele in data_base[crawler_id]:
-        #     print (str(ele))
-
-
-
-
-        # cur_data = CrawlData.objects.filter(crawler_id=crawler_id).order_by('identification_number') #filtering data by crawler_id and ordering identification_number
-        # last_identification_number = cur_data.last().identification_number  #saving last identification number
-        # for data in output_list:            #list of data in output list which splited by spaces
-        #     sliced_data = data.split(separator)     #seperating by seperator value received in data.items()
-        # if int(sliced_data[0]) > last_identification_number:    #which means the new post is written,
-        #     new_crawldata = CrawlData(crawler_id=crawler_id, title=sliced_data[1], date=date_now,   #switch the data
-        #                                   identification_number=int(sliced_data[0]), urls=sliced_data[2])
-        #     new_crawldata.save()
-        # else:
-        #     break
-
+        if length_of_list > 10 :
+            length_of_list = 10
 
 
         for i in range (0, int(length_of_list)) :
