@@ -10,7 +10,7 @@ class CSHanyangCrawler(scrapy.Spider):
     logging.getLogger('scrapy').propagate = False
 
     def parse(self, response):
-        query_notice_title = '#content_in > div:nth-child( > table > tbody > tr:nth-child > td.left > a'
+      
         query_notice_urls = "#content_in > div > table > tbody > tr > td > a::attr(href)"
         query_notice_number = "#content_in > div > table > tbody > tr > td"
 
@@ -18,10 +18,9 @@ class CSHanyangCrawler(scrapy.Spider):
 
         numbers = [int(text) for text in response.css(query_notice_number).extract() if text.isdigit()]
         urls = response.css(query_notice_urls).extract()
-        titles = response.css(query_notice_title).extract()
+
+
         pairs = zip(numbers, urls)
-        for i in titles :
-            print (i)
         for number, pair in pairs:
 #            print (number, pair)
             print(str(number) + "&^%987&^%" + pair + "&^%987&^%" + self.base_urls +str(number)+"&subkind=&offset=0")
