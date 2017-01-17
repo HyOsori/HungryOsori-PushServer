@@ -10,9 +10,8 @@ class CSHanyangCrawler(scrapy.Spider):
     logging.getLogger('scrapy').propagate = False
 
     def parse(self, response):
-        query_notice_urls = "#content_in > div > table > tbody > tr > td > a::attr(href)"
-        query_notice_number = "#content_in > div > table > tbody > tr > td"
-
+        query_notice_urls = "#content_in > div > table > tr:nth-child(25) > td.left > a::attr(href)"
+        query_notice_number = "#content_in > div > table > tr:nth-child(25) > td:nth-child(2)"
         default_time = int(datetime.datetime.now().timestamp()) * 10
 
         numbers = [int(text) for text in response.css(query_notice_number).extract() if text.isdigit()]
