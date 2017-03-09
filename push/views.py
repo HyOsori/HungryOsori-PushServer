@@ -24,7 +24,6 @@ changed_crawler_id = ['0', 'crawler_name', 'changed_line', 'link_urls']
 data_base = [['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
              ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
              ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10']]
-db_created = 0
 
 
 @csrf_exempt
@@ -67,6 +66,7 @@ def crawl_data(request):
     #Number of Crawlers will be used later
     #update = []
 
+    crawled_data = CrawlData()
     date_now = datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)                             #save the json_data in data
@@ -86,44 +86,50 @@ def crawl_data(request):
         #print (file_name + " :::: " + separator + " :::: " + str(crawler_id))
         output = (subprocess.check_output("python3 Osori-WebCrawler/" + file_name, shell=True)).decode("utf-8") #crawl the file
         output_list = output.splitlines()                   #split its data by word-break
-        print(output_list)
+        #print(output_list)
         #print ("output ::: " + output + " :::::: " + output_list[0])
 
-        final_list = []
-        final_list.clear()
+        title_list = []
+        title_list.clear()
 
         for output_list_ele in output_list :
             listing = output_list_ele.split(separator)
             # print (listing[0])
-            final_list.append(listing[crit])
+            title_list.append(listing[crit])
             # print (str(crawler_id) + "add is " + ((listing[crit] + "00000000000")[:10]))
 
-        length_of_list = len(final_list)
+        length_of_list = len(title_list)
 
-        if length_of_list > 10 :
+        '''if length_of_list > 10 :
             length_of_list = 10
+        '''
 
 
         for i in range (0, int(length_of_list)) :
-            print("crawler_id : " + str(crawler_id)  + "\ni : " + str(i) + "\n")
-            if data_base[crawler_id][i] != final_list[i] :
+            #print("crawler_id : " + str(crawler_id)  + "\ni : " + str(i) + "\n")
+            rows = CrawlData.objects.filter(crawler_id=crawler_id).order_by('-date')
+            #filter by crawler id & order by descending sequence
+            if rows[i] != title_list[i] :
                 # print("different !! " + final_list[i])
+                data = CrawlData()
                 for k in range (0, int(length_of_list)) :
                     # print(str(crawler_id) + " crwadsdsad is and " + str(k) + " is k ::::: " + str(length_of_list) )
-                    string_file = final_list[k]
+                    string_file = title_list[k]
 
-                    data_base[int(crawler_id)][int(k)] = string_file
+                    #data_base[int(crawler_id)][int(k)] = string_file
+                    data.title = string_file
 
 
 
                 changed_crawler_id[0] = str(crawler_id)
                 changed_crawler_id[1] = value_title
-                changed_crawler_id[2] = str("내용중 \"" + final_list[i] + "\"이 변경되었습니다!")
+                changed_crawler_id[2] = str("내용중 \"" + title_list[i] + "\"이 변경되었습니다!")
                 tmp = (output_list[i].split(separator))
                 changed_crawler_id[3] = str(tmp[int(url_index)])   #str(final_list[i][int(url_index)])
                 push_urls()
+                data.save()
                 for j in range(0,int(length_of_list)):
                     print(str(j) + "is :: " + data_base[crawler_id][j] +  "  ")
-                final_list.clear()
+                title_list.clear()
                 break
     return render(request, 'refresh/push_server_page.html')
