@@ -8,7 +8,7 @@ import subprocess
 from django.conf import settings
 from pyfcm import FCMNotification
 from django.views.decorators.csrf import csrf_exempt
-from .models import CrawlData
+from push.models import CrawlData
 from django.core import exceptions
 from datetime import datetime, timedelta
 from rest_framework.response import Response
@@ -21,22 +21,18 @@ api_list.append(push_api_and)
 api_list.append(push_api_ios)
 tokens = []
 changed_crawler_id = ['0', 'crawler_name', 'changed_line', 'link_urls']
-data_base = [['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
-             ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
-             ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10']]
-
 
 @csrf_exempt
-def push_urls():
-    title_ios = str("구독중인 "+ changed_crawler_id[1] + " 이/가 변경되었습니다!")
-    message_ios = str(changed_crawler_id[2])
-    message_data_android = {'title': str(changed_crawler_id[1] + " Changed!"),
-                    'body': str(changed_crawler_id[2]),
-                    'clickurl': str(changed_crawler_id[3])
+def push_urls(crawler_id, crawler_name, changed_line, url_link ):
+    title_ios = str("구독중인 "+ crawler_name + " 이/가 변경되었습니다!")
+    message_ios = str(changed_line)
+    message_data_android = {'title': str(crawler_name + " Changed!"),
+                    'body': str(changed_line),
+                    'clickurl': str(url_link)
                     }
 
     api_request_url = 'http://52.78.113.6:8000/subscribers_pushtoken/'
-    payload = {'crawler_id': changed_crawler_id[0]}
+    payload = {'crawler_id': crawler_id}
     r = requests.post(api_request_url, data=payload)
     token_receive_data = r.json()
     for k in token_receive_data['data']:
@@ -63,39 +59,29 @@ def push_urls():
 
 @csrf_exempt
 def crawl_data(request):
-    #Number of Crawlers will be used later
-    #update = []
-
     date_now = datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)                             #save the json_data in data
 
-    for key, value in data.items():         #current, 170103, We only available in crawler 1, 2 because of error in crawler file
-        #update.append(0)
-        #get key and value in data class
-        #find the crawl_id
-        file_name = value['file_name']                      #value is dictionary type, so it access by its index
+    for key, value in data.items():         #current, 170311, We only available in crawler 0, 1, 2 because of error in other crawler file
+
+        file_name = value['file_name']
         separator = value['separator']
         crawler_id = int(value['crawl_id'])
         value_title = value['title']
         url_index = value['url_index']
-        crit = int(value['criteria'])
-        # print(file_name + " " + separator + " " + str(crawler_id) + " " + value_title + " " + str(crit))
-        #print ("criteria s :::: " + str(crit))
-        #print (file_name + " :::: " + separator + " :::: " + str(crawler_id))
+        criteria = int(value['criteria'])
+
         output = (subprocess.check_output("python3 Osori-WebCrawler/" + file_name, shell=True)).decode("utf-8") #crawl the file
-        output_list = output.splitlines()                   #split its data by word-break
-        #print(output_list)
-        #print ("output ::: " + output + " :::::: " + output_list[0])
+        crawling_result_list = output.splitlines()                   #split its data by word-break
 
         title_list = []
-        title_list.clear()
 
-        for output_list_ele in output_list :
-            listing = output_list_ele.split(separator)
+        for crawling_element in crawling_result_list :
+            crawl_result_info = crawling_element.split(separator)
             # print (listing[0])
-            title_list.append(listing[crit])
-            # print (str(crawler_id) + "add is " + ((listing[crit] + "00000000000")[:10]))
+            title_list.append(crawl_result_info[criteria])
+            # print (str(crawler_id) + "add is " + ((listing[criteria] + "00000000000")[:10]))
 
         length_of_list = len(title_list)
 
@@ -103,33 +89,67 @@ def crawl_data(request):
             length_of_list = 10
         '''
 
-
         for i in range (0, int(length_of_list)) :
             #print("crawler_id : " + str(crawler_id)  + "\ni : " + str(i) + "\n")
             rows = CrawlData.objects.filter(crawler_id=crawler_id).order_by('-date')
             #filter by crawler id & order by descending sequence
-            if rows[i] != title_list[i] :
+            if rows[(length_of_list - i - 1)].title != title_list[i] :
                 # print("different !! " + final_list[i])
-                data = CrawlData()
+
                 for k in range (0, int(length_of_list)) :
                     # print(str(crawler_id) + " crwadsdsad is and " + str(k) + " is k ::::: " + str(length_of_list) )
                     string_file = title_list[k]
+                    modeldata = CrawlData()
+                    modeldata.crawler_id = crawler_id
+                    modeldata.title = string_file
+                    modeldata.urls = url_index
+                    modeldata.save()
 
-                    #data_base[int(crawler_id)][int(k)] = string_file
-                    data.title = string_file
-                    data.urls = url_index
 
-
-
-                changed_crawler_id[0] = str(crawler_id)
-                changed_crawler_id[1] = value_title
-                changed_crawler_id[2] = str("내용중 \"" + title_list[i] + "\"이 변경되었습니다!")
-                tmp = (output_list[i].split(separator))
-                changed_crawler_id[3] = str(tmp[int(url_index)])   #str(final_list[i][int(url_index)])
-                push_urls()
-                data.save()
-                for j in range(0,int(length_of_list)):
-                    print(str(j) + "is :: " + data_base[crawler_id][j] +  "  ")
+                changed_url_link = (crawling_result_list[i].split(separator))
+                push_urls(str(crawler_id)
+                                 , value_title
+                                 , str("내용중 \"" + title_list[i] + "\"이 변경되었습니다!")
+                                 , str(changed_url_link[int(url_index)]))
                 title_list.clear()
                 break
     return render(request, 'refresh/push_server_page.html')
+
+@csrf_exempt
+def create_data(request):   #This function is made for create initial data.
+                            #Because if there's no data in DB, we retrieve null value, which can cause null array.
+                            #Empty array can make the range out error.
+
+    with open('Osori-WebCrawler/settings.json') as json_data:
+        setting_data = json.load(json_data)                             #save the json_data in data
+
+
+    for key, value in setting_data.items():         #current, 170311, We only available in crawler 0, 1, 2
+
+        file_name = value['file_name']
+        separator = value['separator']
+        crawler_id = int(value['crawl_id'])
+        url_index = value['url_index']
+        criteria = int(value['criteria'])
+
+        output = (subprocess.check_output("python3 Osori-WebCrawler/" + file_name, shell=True)).decode("utf-8") #crawl the file
+        crawling_result_list = output.splitlines()                   #split its data by enter
+
+        title_list = []
+
+        for crawling_element in crawling_result_list :
+            crawl_result_info = crawling_element.split(separator)
+            title_list.append(crawl_result_info[criteria])
+
+        length_of_list = len(title_list)
+
+        for i in range(0, int(length_of_list)):
+                modeldata = CrawlData()
+                string_file = title_list[i]
+                modeldata.crawler_id = crawler_id
+                modeldata.title = string_file
+                modeldata.urls = url_index
+                modeldata.save()
+
+    return render(request, 'refresh/push_server_page.html')
+
