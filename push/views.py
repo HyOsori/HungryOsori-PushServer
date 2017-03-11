@@ -66,7 +66,6 @@ def crawl_data(request):
     #Number of Crawlers will be used later
     #update = []
 
-    crawled_data = CrawlData()
     date_now = datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)                             #save the json_data in data
@@ -118,6 +117,7 @@ def crawl_data(request):
 
                     #data_base[int(crawler_id)][int(k)] = string_file
                     data.title = string_file
+                    data.urls = url_index
 
 
 
