@@ -29,6 +29,7 @@ def push_urls(crawler_id, crawler_name, changed_line, url_link ):
     #make push message for ios
     title_ios = str("구독중인 "+ crawler_name + " 이/가 변경되었습니다!")
     message_ios = str(changed_line)
+
     #make push message for android
     message_data_android = {'title': str(crawler_name + " Changed!"),
                     'body': str(changed_line),
@@ -38,6 +39,7 @@ def push_urls(crawler_id, crawler_name, changed_line, url_link ):
     #shoot the crawler id to API server and receive the subscribe user as json type
     payload = {'crawler_id': crawler_id}
     received_json = requests.post(api_request_url, data=payload)
+
     #parse the json user data
     token_receive_data = received_json.json()
     for k in token_receive_data['data']:
