@@ -21,20 +21,25 @@ api_list.append(push_api_and)
 api_list.append(push_api_ios)
 tokens = []
 changed_crawler_id = ['0', 'crawler_name', 'changed_line', 'link_urls']
+api_request_url = 'http://52.78.113.6:8000/subscribers_pushtoken/'
+
 
 @csrf_exempt
 def push_urls(crawler_id, crawler_name, changed_line, url_link ):
+    #make push message for ios
     title_ios = str("구독중인 "+ crawler_name + " 이/가 변경되었습니다!")
     message_ios = str(changed_line)
+    #make push message for android
     message_data_android = {'title': str(crawler_name + " Changed!"),
                     'body': str(changed_line),
                     'clickurl': str(url_link)
                     }
 
-    api_request_url = 'http://52.78.113.6:8000/subscribers_pushtoken/'
+    #shoot the crawler id to API server and receive the subscribe user as json type
     payload = {'crawler_id': crawler_id}
-    r = requests.post(api_request_url, data=payload)
-    token_receive_data = r.json()
+    received_json = requests.post(api_request_url, data=payload)
+    #parse the json user data
+    token_receive_data = received_json.json()
     for k in token_receive_data['data']:
         tokens.append(k['push_token'])
 
@@ -43,12 +48,10 @@ def push_urls(crawler_id, crawler_name, changed_line, url_link ):
         push_service = FCMNotification(api_key=i)
         result = None
         try:
-            if i == api_list[0]:
-                # print("and")
+            if i == api_list[0]:    #which means push to android
                 result = push_service.notify_multiple_devices(registration_ids=tokens, data_message=message_data_android)
-            elif i == api_list[1]:
+            elif i == api_list[1]:  #which means push to ios
                 result = push_service.notify_multiple_devices(message_title=title_ios, message_body=message_ios,registration_ids=tokens, data_message={})
-            #message_title= title, message_body= message,
 
         except Exception as e:
             print(e)
@@ -59,7 +62,6 @@ def push_urls(crawler_id, crawler_name, changed_line, url_link ):
 
 @csrf_exempt
 def crawl_data(request):
-    date_now = datetime.now()
     with open('Osori-WebCrawler/settings.json') as json_data:
         data = json.load(json_data)                             #save the json_data in data
 
@@ -79,25 +81,16 @@ def crawl_data(request):
 
         for crawling_element in crawling_result_list :
             crawl_result_info = crawling_element.split(separator)
-            # print (listing[0])
             title_list.append(crawl_result_info[criteria])
-            # print (str(crawler_id) + "add is " + ((listing[criteria] + "00000000000")[:10]))
 
         length_of_list = len(title_list)
 
-        '''if length_of_list > 10 :
-            length_of_list = 10
-        '''
 
         for i in range (0, int(length_of_list)) :
-            #print("crawler_id : " + str(crawler_id)  + "\ni : " + str(i) + "\n")
             rows = CrawlData.objects.filter(crawler_id=crawler_id).order_by('-date')
-            #filter by crawler id & order by descending sequence
             if rows[(length_of_list - i - 1)].title != title_list[i] :
-                # print("different !! " + final_list[i])
 
                 for k in range (0, int(length_of_list)) :
-                    # print(str(crawler_id) + " crwadsdsad is and " + str(k) + " is k ::::: " + str(length_of_list) )
                     string_file = title_list[k]
                     modeldata = CrawlData()
                     modeldata.crawler_id = crawler_id
@@ -114,6 +107,7 @@ def crawl_data(request):
                 title_list.clear()
                 break
     return render(request, 'refresh/push_server_page.html')
+
 
 @csrf_exempt
 def create_data(request):   #This function is made for create initial data.
