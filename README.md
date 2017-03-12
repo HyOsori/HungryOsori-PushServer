@@ -4,13 +4,13 @@ HungryOsori-PushServer
 
 기능 
 ------------------------------------------
-    HyOsori/Osori-WebCrawler에 있는 크롤러 파일들 주기적 크롤링
-    변경사항 체크후 Android/iOS 어플에 푸시 알람
+* HyOsori/Osori-WebCrawler에 있는 크롤러 파일들 주기적 크롤링
+* 변경사항 체크후 Android/iOS 어플에 푸시 알람
 
 
 크롤링
 -------------------------------------------
-	Crontab을 이용, 3시간 주기로 크롤링을 한다.
+* Crontab을 이용, 3시간 주기로 크롤링을 한다.
 	
 - 크롤링 파일 목록
 
