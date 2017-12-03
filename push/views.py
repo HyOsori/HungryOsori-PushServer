@@ -49,6 +49,7 @@ def push_urls(crawler_id, crawler_name, changed_line, url_link ):
     for i in api_list:
         push_service = FCMNotification(api_key=i)
         result = None
+
         try:
             if i == api_list[0]:    #which means push to android
                 result = push_service.notify_multiple_devices(registration_ids=tokens, data_message=message_data_android)
@@ -61,6 +62,21 @@ def push_urls(crawler_id, crawler_name, changed_line, url_link ):
 
     tokens.clear()
     return;
+
+@csrf_exempt
+def push_test_ios(request):
+
+    push_service = FCMNotification(api_key="AAAAwJiGQL0:APA91bH0yzNqpkRvB8hgnz64g-OKSjjGJADjtr8njfmY_EuucOAXFciONvfn9ooxqkkPHb3Mt9wZ2LLEEfQn4KFVkKfS8A_7sMQh9mjHUXsGLBseO31m_zOy9c39k3wwim8x0ojvw6ia")
+    title_ios = str("구독중인 "+ "헿" + " 이/가 변경되었습니다!")
+    message_ios = str("민섭이혀엉~")
+    try:
+        toke_ = ["ec575CPxhj8:APA91bEd64mo-Qw_a6mKYmEIgJ3ui4_qOv_6Cd96XRoHiDeR_IX_zbliwvdNDyNAbASmut9tuPPgY00MzUlVRP33x11I6YxfRY2T-Syli8U0FeJ1L2AuClaIa5PhbzR0uLvouDmOwfXQ"]
+        result = push_service.notify_single_device(registration_id=toke_[0], message_title=title_ios,
+                                                   message_body=message_ios)
+        # result = push_service.notify_multiple_devices(message_title=title_ios, message_body=message_ios, registration_ids=toke_, data_message={})
+    except Exception as e:
+        print(e)
+    return render(request, 'refresh/push_server_page.html')
 
 @csrf_exempt
 def crawl_data(request):
@@ -103,7 +119,7 @@ def crawl_data(request):
                                  , str("내용중 \"" + title_list[i] + "\"이 변경되었습니다!")
                                  , str(changed_url_link[int(url_index)]))
                 title_list.clear()
-                break
+                # break
     return render(request, 'refresh/push_server_page.html')
 
 
