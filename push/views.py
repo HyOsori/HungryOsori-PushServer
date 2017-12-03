@@ -87,11 +87,9 @@ def crawl_data(request):
 
         length_of_list = len(title_list)
 
-
-        for i in range (0, int(length_of_list)) :
+        for i in range(0, int(length_of_list)):
             rows = CrawlData.objects.filter(crawler_id=crawler_id).order_by('-date')
-            if rows[(length_of_list - i - 1)].title != title_list[i] :
-
+            if rows[(length_of_list - i - 1)].title != title_list[i]:
                 for k in range (0, int(length_of_list)) :
                     string_file = title_list[k]
                     modeldata = CrawlData()
@@ -99,8 +97,6 @@ def crawl_data(request):
                     modeldata.title = string_file
                     modeldata.urls = url_index
                     modeldata.save()
-
-
                 changed_url_link = (crawling_result_list[i].split(separator))
                 push_urls(str(crawler_id)
                                  , value_title
@@ -109,6 +105,9 @@ def crawl_data(request):
                 title_list.clear()
                 break
     return render(request, 'refresh/push_server_page.html')
+
+
+
 
 
 @csrf_exempt

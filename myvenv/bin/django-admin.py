@@ -1,4 +1,4 @@
-#!/home/doomsheart/Dev/Osori/HungryOsori-PushServer/myvenv/bin/python3
+#!/home/doomsheart/Dev/HungryOsori-PushServer/myvenv/bin/python3
 from django.core import management
 
 if __name__ == "__main__":

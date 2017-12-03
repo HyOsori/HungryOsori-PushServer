@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelavent variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/doomsheart/Dev/Osori/HungryOsori-PushServer/myvenv"
+VIRTUAL_ENV="/home/doomsheart/Dev/HungryOsori-PushServer/myvenv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
